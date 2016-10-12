@@ -8,10 +8,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class EquworldPoles extends JavaPlugin implements Listener {
 	
 	public final String prefix = "EquworldPoles";
+	public HashMap<String, FenceBar> fenceBars = new HashMap<String, FenceBar>();
 	
 	@Override
 	public void onEnable() {
@@ -63,10 +65,15 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 
 		if (cmd.getName().equalsIgnoreCase("thecommand")) {
 			if (args[0].equalsIgnoreCase("TheFenceNameee")) {
-				
+				fenceBars.put("FenceName", new FenceBar());
 			}
+		}
+		else if(cmd.getName().equalsIgnoreCase("thecommand")){
+			if (args[0].equalsIgnoreCase("TheFenceNameee")) {
+				//get fencebar matching that name. 
+			}
+				
 		}
 		return false;
 	}
-
 }
