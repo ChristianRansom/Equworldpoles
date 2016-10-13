@@ -1,3 +1,8 @@
 name: EquworldPoles
 main: ransom.minecraft.plugin.development.EquworldPoles
 version: 0.1
+commands:
+  MakeJump:
+  DeleteJump:
+  AddBlock:
+  RemoveBlock:
