@@ -6,3 +6,4 @@ commands:
   DeleteJump:
   AddBlock:
   RemoveBlock:
+  ListJumps:

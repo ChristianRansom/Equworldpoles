@@ -1,20 +1,20 @@
 package ransom.minecraft.plugin.development;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.sound.sampled.Line;
+
 import org.bukkit.Location;
 
 public class FenceBar {
 
 	private ArrayList<FenceTop> fenceTops = new ArrayList<FenceTop>();
 	private Location resetSign = new Location(null, 0, 0, 0);
-	boolean set;
+	private boolean set;
 	
 	public FenceBar(){
 		this.set = true; 
-	}
-	
-	public void addFenceTop(){
-		
 	}
 	
 	//Called on Player Move
@@ -46,8 +46,45 @@ public class FenceBar {
 	
 	@Override
 	public String toString(){
-		return null;
+		
+		//Get each Line.class Split it. First is name, each consecutive 3 are a location. 
+		return "" + this.fenceTops;
+		
+	}
+
+	public void addFenceTop(Location location) {
+		fenceTops.add(new FenceTop(location));
+		// TODO Auto-generated method stub
 		
 	}
 	
+	public ArrayList<FenceTop> getFenceTops(){
+		return fenceTops;
+	}
+
+	public void addFenceTop(int x, int y, int z) {
+		fenceTops.add(new FenceTop(x, y, z));
+	}
+	
+	public boolean removeFenceTop(int x, int y, int z){
+		FenceTop fence = new FenceTop(x,y,z);
+		if(this.contains(fence)){
+			this.fenceTops.remove(fence);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean contains(FenceTop fence){
+		if(fenceTops.contains(fence)){
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeFenceTop(Location location) {
+		return this.removeFenceTop(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	}
+
+
 }

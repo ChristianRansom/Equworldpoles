@@ -1,21 +1,19 @@
 package ransom.minecraft.plugin.development;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class EquworldPoles extends JavaPlugin implements Listener {
 	
 	public final String prefix = "EquworldPoles";
-	public HashMap<String, FenceBar> fenceBars = new HashMap<String, FenceBar>();
 	protected JumpsStore jumpsStore;
 	
 	@Override
@@ -23,40 +21,32 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		
 		String pluginFolder = this.getDataFolder().getAbsolutePath();
 		(new File(pluginFolder)).mkdirs();
-		
-		this.jumpsStore = new JumpsStore(new File(pluginFolder + File.separator + "Jumps.txt"));
-		
-		this.jumpsStore.load();
-		jumpsStore.add("TEST 2B.5");
-		this.jumpsStore.save();
 		getLogger().info(prefix + "is now enabled!");
-		getLogger().info("This is the data in the file: " + this.jumpsStore.getValues());
 		getServer().getPluginManager().registerEvents(this, this);
 
-		// Register defaults
-		ArrayList<Object> defaults = new ArrayList<Object>();
+		/*fenceBars.put("TestJump", new FenceBar());
+		fenceBars.get("TestJump").addFenceTop(new Location(null, 0.5, 0.5, 0.5));
+		fenceBars.get("TestJump").addFenceTop(new Location(null, 1, 1, 1));
+		fenceBars.get("TestJump").addFenceTop(new Location(null, 2, 2, 2));
+
+		
+		
+		getLogger().info("Print tests: \n A location: " + new Location(null, 0.5, 0.5, 0.5)
+				+ "\nA fenceBar: " + fenceBars.get("TestJump")
+				+ "\nA fenceTop: " + fenceBars.get("TestJump").getFenceTops().get(0));
+*/
+		
+		this.jumpsStore = new JumpsStore(new File(pluginFolder + File.separator + "Jumps.txt"));
+		this.jumpsStore.load();
+		
+
 	}
 	
 	
 	@Override
 	public void onDisable() {
 		getLogger().info(prefix + "is now disabled.");
-
-		// Save the list
-		try {
-			// Serialize and save rewards
-			/*ArrayList<ItemStack> rewards = (ArrayList<ItemStack>) list.get(26);
-			ArrayList<Map<String, Object>> serializedRewards = new ArrayList<Map<String, Object>>();
-			for (ItemStack is : rewards) {
-				serializedRewards.add(is.serialize());
-			}
-			list.set(26, serializedRewards);
-			getConfig().set("com.wenikalla.anvilgame", ObjectString.objectToString(list));*/
-		} catch (Exception e) {
-			getLogger().info(prefix + "CRITICAL ERROR: CORRUPTED DATA. PLEASE DELETE ANVILGAME DATA FILES.");
-			e.printStackTrace();
-		}
-		saveConfig();
+		this.jumpsStore.save();
 	}
 	
 	@EventHandler
@@ -74,18 +64,58 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 	
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
-
-		if (cmd.getName().equalsIgnoreCase("thecommand")) {
-			if (args[0].equalsIgnoreCase("TheFenceNameee")) {
-				fenceBars.put("FenceName", new FenceBar());
-			}
+		
+		Player player = (Player)sender;
+		
+		//MakeJump <JumpName>
+		if (cmd.getName().equalsIgnoreCase("MakeJump")) {
+			//fenceBars.put(args[0], new FenceBar());
+			sender.sendMessage("Jump Created");
+			this.jumpsStore.add(args[0]);
+			saveData();
+			return true;
 		}
-		else if(cmd.getName().equalsIgnoreCase("thecommand")){
-			if (args[0].equalsIgnoreCase("TheFenceNameee")) {
-				//get fencebar matching that name. 
+		//DeleteJump <JumpName>
+		else if(cmd.getName().equalsIgnoreCase("DeleteJump")){
+			//fenceBars.remove(args[0]);
+			if(this.jumpsStore.remove(args[0])){
+				sender.sendMessage("Jump Deleted");
+				saveData();
 			}
-				
+			else{
+				sender.sendMessage("There is no Jump by that name.");
+			}
+			return true;
+		}
+		//AddBlock <JumpName>
+		else if(cmd.getName().equalsIgnoreCase("AddBlock")){
+			this.jumpsStore.get(args[0]).addFenceTop(player.getLocation());
+			return true;
+		}
+		//RemoveBlock <JumpName>
+		else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
+			if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
+				sender.sendMessage("Block removed from jump: " + args[0]);
+			}
+			else{
+				sender.sendMessage("That block is not part of jump: " + args[0]);
+			}
+			return true;
+		}
+		else if(cmd.getName().equalsIgnoreCase("ListJumps")){
+			sender.sendMessage(this.jumpsStore.getJumpNames().toString());
+			return true;
 		}
 		return false;
+	}
+	
+	
+	public void saveData(){
+		try{
+			this.jumpsStore.save();
+		}
+		catch(Exception e){	
+			e.printStackTrace();
+		}
 	}
 }
