@@ -44,6 +44,10 @@ public class FenceBar {
 		return false;
 	}
 	
-	
+	@Override
+	public String toString(){
+		return null;
+		
+	}
 	
 }
