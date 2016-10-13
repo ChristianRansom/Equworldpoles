@@ -7,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,9 +16,16 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 	
 	public final String prefix = "EquworldPoles";
 	public HashMap<String, FenceBar> fenceBars = new HashMap<String, FenceBar>();
+	protected JumpsStore jumpsStore;
 	
 	@Override
 	public void onEnable() {
+		
+		String pluginFolder = this.getDataFolder().getAbsolutePath();
+		(new File(pluginFolder)).mkdirs();
+		
+		this.jumpsStore = new JumpsStore(new File(pluginFolder + File.separator + "Jumps.txt"));
+		
 
 		getLogger().info(prefix + "is now enabled!");
 		getServer().getPluginManager().registerEvents(this, this);

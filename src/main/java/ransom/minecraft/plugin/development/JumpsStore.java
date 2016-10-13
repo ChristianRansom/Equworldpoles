@@ -37,7 +37,7 @@ public class JumpsStore {
 			String line;
 			
 			while((line = reader.readLine()) != null){
-				if(this.data.contains(line) == false){
+				if(this.contains(line) == false){
 					this.data.add(line);
 				}
 			}
@@ -67,4 +67,23 @@ public class JumpsStore {
 		
 		
 	}
+	public boolean contains(String value){
+		return this.data.contains(value);
+	}
+	
+	public void add(String value){
+		if(this.contains(value) == false){
+			this.data.add(value);
+		}
+	}
+	
+	public void remove(String value){
+		this.data.remove(value);
+	}
+	
+	public ArrayList<String> getValues(){
+		return this.data;
+	}
+	
+
 }
