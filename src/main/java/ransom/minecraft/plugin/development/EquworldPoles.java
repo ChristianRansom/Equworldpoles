@@ -26,8 +26,11 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		
 		this.jumpsStore = new JumpsStore(new File(pluginFolder + File.separator + "Jumps.txt"));
 		
-
+		this.jumpsStore.load();
+		jumpsStore.add("TEST 2B.5");
+		this.jumpsStore.save();
 		getLogger().info(prefix + "is now enabled!");
+		getLogger().info("This is the data in the file: " + this.jumpsStore.getValues());
 		getServer().getPluginManager().registerEvents(this, this);
 
 		// Register defaults
