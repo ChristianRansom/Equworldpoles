@@ -52,8 +52,14 @@ public class FenceBar {
 		
 	}
 
-	public void addFenceTop(Location location) {
-		fenceTops.add(new FenceTop(location));
+	public boolean addFenceTop(Location location) {
+		FenceTop fence = new FenceTop(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		System.out.print("DOes this work?");
+		if(!this.contains(fence)){
+			fenceTops.add(new FenceTop(location));
+			return true;
+		}
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
@@ -76,15 +82,16 @@ public class FenceBar {
 	}
 	
 	public boolean contains(FenceTop fence){
-		if(fenceTops.contains(fence)){
-			return true;
+		for(int i = 0; i < fenceTops.size(); i++){
+			if(fence.equals(fenceTops.get(i))){
+				return true;
+			}
 		}
+
 		return false;
 	}
 
 	public boolean removeFenceTop(Location location) {
 		return this.removeFenceTop(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 	}
-
-
 }

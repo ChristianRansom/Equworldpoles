@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
+import java.util.ArrayList;
 
 public class EquworldPoles extends JavaPlugin implements Listener {
 	
@@ -66,7 +67,7 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		
 		Player player = (Player)sender;
-		
+		//TODO  check if arg[0] exists
 		//MakeJump <JumpName>
 		if (cmd.getName().equalsIgnoreCase("MakeJump")) {
 			//fenceBars.put(args[0], new FenceBar());
@@ -89,13 +90,20 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		}
 		//AddBlock <JumpName>
 		else if(cmd.getName().equalsIgnoreCase("AddBlock")){
-			this.jumpsStore.get(args[0]).addFenceTop(player.getLocation());
+			if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
+				sender.sendMessage("Block added to jump: " + args[0]);
+				saveData();
+			}
+			else {
+				sender.sendMessage("That block is already part of jump: " + args[0]);
+			}
 			return true;
 		}
 		//RemoveBlock <JumpName>
 		else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
 			if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
 				sender.sendMessage("Block removed from jump: " + args[0]);
+				saveData();
 			}
 			else{
 				sender.sendMessage("That block is not part of jump: " + args[0]);
@@ -103,7 +111,11 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 			return true;
 		}
 		else if(cmd.getName().equalsIgnoreCase("ListJumps")){
-			sender.sendMessage(this.jumpsStore.getJumpNames().toString());
+			//sender.sendMessage(this.jumpsStore.getJumpNames().toString());
+			ArrayList<String> alldata = this.jumpsStore.getAllData();
+			for(String value : alldata){
+				sender.sendMessage(value);
+			}
 			return true;
 		}
 		return false;

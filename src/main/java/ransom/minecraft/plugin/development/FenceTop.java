@@ -3,6 +3,7 @@ package ransom.minecraft.plugin.development;
 import org.bukkit.Location;
 
 public class FenceTop {
+	//mins and maxes are stored so they only have to be calculated once
 	private double minX;
 	private double maxX;
 	private double minY;
@@ -56,5 +57,12 @@ public class FenceTop {
 
 	public void setZ(int z) {
 		this.z = z;
+	}
+	
+	public boolean equals(FenceTop other){
+		if(other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z){
+			return true; 
+		}
+		return false;
 	}
 }

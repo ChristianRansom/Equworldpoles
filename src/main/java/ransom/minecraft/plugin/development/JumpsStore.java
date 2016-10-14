@@ -52,7 +52,7 @@ public class JumpsStore {
 				name = values[0];
 				//Not checking if it already exists. Should only load once
 				fenceBars.put(name, new FenceBar());
-				for(int i = 1; i < values.length; i++){
+				for(int i = 1; i < values.length;){ //No auto increment because it happens in the loop
 					x = Integer.parseInt(values[i++]);
 					y = Integer.parseInt(values[i++]);
 					z = Integer.parseInt(values[i++]);
@@ -127,9 +127,34 @@ public class JumpsStore {
 		return this.fenceBars.get(name);
 	}
 	
+	//used to return all the names of stored jumps 
 	public Set<String> getJumpNames(){
 		return this.fenceBars.keySet();
-
+	}
+	
+	//This method is only  used for debugging purposes
+	public ArrayList<String> getAllData(){
+		ArrayList<String> data = new ArrayList<String>();
+		
+		Iterator it = this.fenceBars.entrySet().iterator();
+		
+		while(it.hasNext()){
+			Map.Entry pair = (Map.Entry)it.next();
+			String name = (String)pair.getKey();
+			FenceBar jump = (FenceBar) pair.getValue();
+			String jumpString = name + " "; //Writes name at beginning of line. Adding spaces to end of strings
+			
+			ArrayList<FenceTop> fenceTops = jump.getFenceTops();
+			for(FenceTop fence : fenceTops){
+				jumpString = jumpString + fence.getX() + " ";
+				jumpString = jumpString + fence.getY() + " ";
+				jumpString = jumpString + fence.getZ() + " ";
+			}
+			data.add(jumpString);
+		}
+		return data;
+		
+		
 	}
 
 
