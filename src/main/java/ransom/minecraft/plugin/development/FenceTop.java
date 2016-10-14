@@ -23,11 +23,11 @@ public class FenceTop {
 		
 		//These values are due to the hit box size of the horse.
 		this.maxX = x + 1.688;
-		this.minX = x - 0.700; //This value of 700 doesn't match f3 coords... should be .719
+		this.minX = x - 0.699; //This value of 700 doesn't match f3 coords... should be .719
 		this.maxY = y + 0.8500001;//Little be more than exact horse height being: .8500000178814 
 		this.minY = y - .5;//This is arbitrary. They'd have to be inside of the fencetop block to be here. 
 		this.maxZ = z + 1.688;
-		this.minZ = z - 0.700;
+		this.minZ = z - 0.699;
 	}
 
 	public FenceTop(Location playerLoc){
@@ -63,6 +63,8 @@ public class FenceTop {
 	public void setZ(int z) {
 		this.z = z;
 	}
+	
+	//TODO figure out how to account for high change when horse is 'kicking legs up'
 	
 	public boolean equals(FenceTop other){
 		if(other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z){
