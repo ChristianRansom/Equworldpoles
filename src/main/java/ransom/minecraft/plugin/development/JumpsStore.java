@@ -62,7 +62,6 @@ public class JumpsStore {
 			reader.close();
 			stream.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

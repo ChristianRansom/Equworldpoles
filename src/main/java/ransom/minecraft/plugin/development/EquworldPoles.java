@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class EquworldPoles extends JavaPlugin implements Listener {
 	
@@ -66,57 +67,91 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		
-		Player player = (Player)sender;
-		//TODO  check if arg[0] exists
-		//MakeJump <JumpName>
-		if (cmd.getName().equalsIgnoreCase("MakeJump")) {
-			//fenceBars.put(args[0], new FenceBar());
-			sender.sendMessage("Jump Created");
-			this.jumpsStore.add(args[0]);
-			saveData();
-			return true;
-		}
-		//DeleteJump <JumpName>
-		else if(cmd.getName().equalsIgnoreCase("DeleteJump")){
-			//fenceBars.remove(args[0]);
-			if(this.jumpsStore.remove(args[0])){
-				sender.sendMessage("Jump Deleted");
-				saveData();
-			}
-			else{
-				sender.sendMessage("There is no Jump by that name.");
-			}
-			return true;
-		}
-		//AddBlock <JumpName>
-		else if(cmd.getName().equalsIgnoreCase("AddBlock")){
-			if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
-				sender.sendMessage("Block added to jump: " + args[0]);
-				saveData();
-			}
-			else {
-				sender.sendMessage("That block is already part of jump: " + args[0]);
-			}
-			return true;
-		}
-		//RemoveBlock <JumpName>
-		else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
-			if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
-				sender.sendMessage("Block removed from jump: " + args[0]);
-				saveData();
-			}
-			else{
-				sender.sendMessage("That block is not part of jump: " + args[0]);
-			}
-			return true;
-		}
-		else if(cmd.getName().equalsIgnoreCase("ListJumps")){
+		//Commands without any arguments
+		if(cmd.getName().equalsIgnoreCase("ListJumps")){
 			//sender.sendMessage(this.jumpsStore.getJumpNames().toString());
-			ArrayList<String> alldata = this.jumpsStore.getAllData();
+			Set<String> alldata = this.jumpsStore.getJumpNames();
 			for(String value : alldata){
 				sender.sendMessage(value);
 			}
 			return true;
+		}
+		if(cmd.getName().equalsIgnoreCase("EquworldPoles")){
+			if(args.length > 0 && args[0].equalsIgnoreCase("help")){
+				sender.sendMessage("Commands: ");
+				sender.sendMessage("/MakeJump <jump name> ");
+				sender.sendMessage("/DeleteJump <jump name> ");
+				sender.sendMessage("/AddBlock <jump name> ");
+				sender.sendMessage("/RemoveBlock <jump name> ");
+				sender.sendMessage("/ListJumps ");
+			}
+			else{
+				sender.sendMessage("/EquworldPoles help");
+			}
+			return true;
+		}
+		
+		//MakeJump <JumpName>
+		if(args.length > 0){
+			if (cmd.getName().equalsIgnoreCase("MakeJump")) {
+				//fenceBars.put(args[0], new FenceBar());
+				sender.sendMessage("Jump Created");
+				this.jumpsStore.add(args[0]);
+				saveData();
+				return true;
+			}
+			//DeleteJump <JumpName>
+			else if(cmd.getName().equalsIgnoreCase("DeleteJump")){
+				if(this.jumpsStore.remove(args[0])){
+					sender.sendMessage("Jump Deleted");
+					saveData();
+				}
+				else{
+					sender.sendMessage("There is no Jump by that name.");
+				}
+				return true;
+			}
+			//AddBlock <JumpName>
+			else if(cmd.getName().equalsIgnoreCase("AddBlock")){
+				if((sender instanceof Player)){
+					Player player = (Player)sender;
+					if(!this.jumpsStore.contains(args[0])){
+						sender.sendMessage("There is no jump by that name");
+					}
+					if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
+						sender.sendMessage("Block added to jump: " + args[0]);
+						saveData();
+					}
+					else {
+						sender.sendMessage("That block is already part of jump: " + args[0]);
+					}
+				}
+				else {
+					sender.sendMessage("This command is only available in game.");
+				}
+				
+				return true;
+			}
+			//RemoveBlock <JumpName>
+			else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
+				if(sender instanceof Player){
+					Player player = (Player)sender;
+					if(!this.jumpsStore.contains(args[0])){
+						sender.sendMessage("There is no jump by that name");
+					}
+					if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
+						sender.sendMessage("Block removed from jump: " + args[0]);
+						saveData();
+					}
+					else{
+						sender.sendMessage("That block is not part of jump: " + args[0]);
+					}
+				}
+				else {
+					sender.sendMessage("This command is only available in game.");
+				}
+				return true;
+			}
 		}
 		return false;
 	}

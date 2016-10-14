@@ -59,9 +59,7 @@ public class FenceBar {
 			fenceTops.add(new FenceTop(location));
 			return true;
 		}
-		return false;
-		// TODO Auto-generated method stub
-		
+		return false;		
 	}
 	
 	public ArrayList<FenceTop> getFenceTops(){
