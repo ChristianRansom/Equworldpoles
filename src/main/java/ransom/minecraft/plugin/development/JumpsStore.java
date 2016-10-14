@@ -47,13 +47,21 @@ public class JumpsStore {
 			while((line = reader.readLine()) != null){
 				String[] values = line.split(" "); //Parse Line by spaces eh? 
 				String name;
+				boolean isSet;
 				int x;
 				int y;
 				int z;
 				name = values[0];
+				isSet = Boolean.valueOf(values[1]);
 				//Not checking if it already exists. Should only load once
-				fenceBars.put(name, new FenceBar());
-				for(int i = 1; i < values.length;){ //No auto increment because it happens in the loop
+				//Checks if the gate was dropped or not. /....................
+				if(isSet){
+					fenceBars.put(name, new FenceBar(true)); 
+				}
+				else{
+					fenceBars.put(name, new FenceBar(false));
+				}
+				for(int i = 2; i < values.length;){ //No auto increment because it happens in the loop
 					x = Integer.parseInt(values[i++]);
 					y = Integer.parseInt(values[i++]);
 					z = Integer.parseInt(values[i++]);
@@ -78,7 +86,11 @@ public class JumpsStore {
 				Map.Entry pair = (Map.Entry)it.next();
 				String name = (String)pair.getKey();
 				FenceBar jump = (FenceBar) pair.getValue();
-				String jumpString = name + " "; //Writes name at beginning of line. Adding spaces to end of strings
+				String isSet = "" + jump.isSet();
+				
+				//Writes name at beginning of line followed by isSet. 
+				//Adding spaces to end of strings
+				String jumpString = name + " " + isSet + " "; 
 				
 				ArrayList<FenceTop> fenceTops = jump.getFenceTops();
 				for(FenceTop fence : fenceTops){
@@ -153,7 +165,6 @@ public class JumpsStore {
 			data.add(jumpString);
 		}
 		return data;
-		
 		
 	}
 
