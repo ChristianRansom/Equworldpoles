@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.bukkit.Location;
 
 public class JumpsStore {
 	private File storageFile;
@@ -154,6 +155,23 @@ public class JumpsStore {
 		return data;
 		
 		
+	}
+
+
+	public boolean jumpHit(Location location, EquworldPoles equworldPoles) {
+
+		
+		Iterator it = this.fenceBars.entrySet().iterator();
+		
+		while(it.hasNext()){
+			Map.Entry pair = (Map.Entry)it.next();
+			FenceBar jump = (FenceBar) pair.getValue();
+			if(jump.isHit(location, equworldPoles)){
+				return true;
+			}
+		}
+		return false;
+
 	}
 
 

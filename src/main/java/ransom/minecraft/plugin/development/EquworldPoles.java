@@ -3,6 +3,7 @@ package ransom.minecraft.plugin.development;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,7 +55,14 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
-		
+		Player player = event.getPlayer();
+		//Check if a horse hit the top of a jump
+		 if ((player.isInsideVehicle()) || ((player.getVehicle() instanceof Horse))){
+			 //player.sendMessage("You're on a horse");
+			 if(jumpsStore.jumpHit(player.getLocation(), this)){
+				 
+			 }
+		 }
 	}
 	
 	@EventHandler
@@ -132,6 +140,7 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 				
 				return true;
 			}
+			//TODO fix remove block and other freaking errors adding/removinig blocks from non-existant jumps
 			//RemoveBlock <JumpName>
 			else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
 				if(sender instanceof Player){

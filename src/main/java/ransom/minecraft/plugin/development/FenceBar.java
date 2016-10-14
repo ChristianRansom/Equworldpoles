@@ -1,10 +1,6 @@
 package ransom.minecraft.plugin.development;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.sound.sampled.Line;
-
 import org.bukkit.Location;
 
 public class FenceBar {
@@ -18,16 +14,13 @@ public class FenceBar {
 	}
 	
 	//Called on Player Move
-	public boolean isHit(Location playerLoc){
-		/*whenPlayerMove()
-	     when riding horse
-	          for each fencebar
-	               if fencebar.isHit()
-	                    fencebar.fall()
-	                    this.set = false*/
-						fall();
-		
-		
+	public boolean isHit(Location playerLoc, EquworldPoles equworldPoles){
+		for(FenceTop fence : fenceTops){
+			if(fence.isHit(playerLoc, equworldPoles)){
+				fall();
+				return true;
+			}
+		}
 		return false;
 	}
 	
