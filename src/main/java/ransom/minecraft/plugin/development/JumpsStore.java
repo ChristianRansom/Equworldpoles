@@ -15,13 +15,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
 
 public class JumpsStore {
 	private File storageFile;
 	private HashMap<String, FenceBar> fenceBars; //Stores name of the jump as a key
+	private Plugin plugin;//This is here so we can communicate with the consol for debugging. 
 
 	
-	public JumpsStore(File file){
+	public JumpsStore(File file, Plugin thePlugin){
 		this.storageFile = file;
 		this.fenceBars = new HashMap<String, FenceBar>();
 		
@@ -32,6 +34,7 @@ public class JumpsStore {
 				e.printStackTrace();
 			}
 		}
+		this.plugin = thePlugin;
 	}
 	
 	
@@ -56,10 +59,10 @@ public class JumpsStore {
 				//Not checking if it already exists. Should only load once
 				//Checks if the gate was dropped or not. /....................
 				if(isSet){
-					fenceBars.put(name, new FenceBar(true)); 
+					fenceBars.put(name, new FenceBar(true, plugin)); 
 				}
 				else{
-					fenceBars.put(name, new FenceBar(false));
+					fenceBars.put(name, new FenceBar(false, plugin));
 				}
 				for(int i = 2; i < values.length;){ //No auto increment because it happens in the loop
 					x = Integer.parseInt(values[i++]);
@@ -116,7 +119,7 @@ public class JumpsStore {
 	
 	public void add(String value){
 		if(this.contains(value) == false){
-			this.fenceBars.put(value, new FenceBar());
+			this.fenceBars.put(value, new FenceBar(plugin));
 		}
 	}
 	
