@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 
 public class JumpsStore {
@@ -186,6 +187,28 @@ public class JumpsStore {
 		}
 		return false;
 
+	}
+
+
+	public boolean clickOn(Block clickedBlock) {
+		
+		Iterator it = this.fenceBars.entrySet().iterator();
+		
+		//loop through all jumps
+		while(it.hasNext()){
+			
+			Map.Entry pair = (Map.Entry)it.next();
+			FenceBar jump = (FenceBar) pair.getValue();
+			//If the jump is not set ie. its fallen
+			if(!jump.isSet()){
+				if(jump.clickIsOnFallenFence(clickedBlock)){
+					jump.setSet(true);
+					return true;
+				}
+			}
+		}
+		return false;
+		
 	}
 
 

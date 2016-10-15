@@ -1,6 +1,10 @@
 package ransom.minecraft.plugin.development;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 
 public class FenceTop {
@@ -16,7 +20,7 @@ public class FenceTop {
 	private int x;
 	private int y;
 	private int z;
-	private int fallenBlock; //Recalculates every time it falls. 
+	private int fallLoc; //Recalculates every time it falls. 
 	
 	private Plugin plugin;//This is here to be able to communicate with the consol for debugging	
 
@@ -24,7 +28,7 @@ public class FenceTop {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		
+		//TODO check if fence top is a slab?  
 		//These values are due to the hit box size of the horse.
 		this.maxX = x + 1.688;
 		this.minX = x - 0.699; //This value of 700 doesn't match f3 coords... should be .719
@@ -50,25 +54,83 @@ public class FenceTop {
 	}
 
 	public boolean isHit(Location playerLoc, EquworldPoles equworldPoles) {
-		plugin.getLogger().info("playerLocation: " + 
+		/*plugin.getLogger().info("playerLocation: " + 
 				playerLoc.getX() + " " + playerLoc.getY() + " " + playerLoc.getZ());
 		plugin.getLogger().info("MaxX: " + 
 				this.maxX + " MinX: " + this.minX + " maxY: " 
 				+ this.maxY + " MaxZ: " + this.maxZ + " MinZ: " + this.minZ);
-		
+		*/
 		if(playerLoc.getX() < this.maxX && playerLoc.getX() > this.minX &&
 				playerLoc.getY() < this.maxY && playerLoc.getY() > this.minY &&
 				playerLoc.getZ() < this.maxZ && playerLoc.getZ() > this.minZ){
 			
+			/*plugin.getLogger().info("HIIIIIIITTTTTTTTTTTTTTT");
 			plugin.getLogger().info("HIIIIIIITTTTTTTTTTTTTTT");
-			plugin.getLogger().info("HIIIIIIITTTTTTTTTTTTTTT");
-			plugin.getLogger().info("HIIIIIIITTTTTTTTTTTTTTT");
+			plugin.getLogger().info("HIIIIIIITTTTTTTTTTTTTTT");*/
 			return true;
 		}
 		return false;
 	}
 	
 	public void fall(){
+		World world = Bukkit.getServer().getWorld("world");
+		
+		
+		//This is the actual fence block. Its 1 below where you stand in to create it
+		Block fenceBlock = world.getBlockAt(this.x, this.y - 1, this.z);
+
+		plugin.getLogger().info("Attempting to 'fall()");
+		boolean keepFalling = true;
+		
+		//The first fall location is 2 below the block you stand in to create it 
+		fallLoc = this.y - 2;
+		while(keepFalling && fallLoc > 1){
+			Block aBlock = world.getBlockAt(this.x, fallLoc, this.z);
+			Material aBlockType = aBlock.getType();
+			//if its not air, stop loop, we've found ground. 
+			if(aBlockType != Material.AIR){
+				plugin.getLogger().info("Block material: " + aBlockType);
+				keepFalling = false;
+				plugin.getLogger().info("We've Hit the ground");
+			}
+			else{
+				plugin.getLogger().info("Air Block found");
+				fallLoc--;
+			}
+		}
+		Block fallBlock = world.getBlockAt(this.x, (fallLoc + 1), this.z); //Not sure why it needs fallLoc + 1 but it does. 
+		plugin.getLogger().info("This is the fallLoc where I put the block: " + fallLoc);
+		fallBlock.setType(fenceBlock.getType());
+		fenceBlock.setType(Material.AIR);
+		
+	}
+	
+	public boolean isClicked(Block clickedBlock) {
+		int clickSpot = fallLoc;
+		plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
+		plugin.getLogger().info("Fallen Block: " + this.x + " " + this.fallLoc + " " + this.z);
+		plugin.getLogger().info("Thats not a fallen fenceBlock");
+		
+		if(clickedBlock.getX() == this.x && clickedBlock.getY() == this.fallLoc && clickedBlock.getZ() == this.z){	
+			plugin.getLogger().info("THATS A FALLEN BLOCK OMG!!!");
+			return true;
+		}
+		plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
+		plugin.getLogger().info("Fallen Block: " + this.x + " " + this.fallLoc + " " + this.z);
+		plugin.getLogger().info("Thats not a fallen fenceBlock");
+		return false;
+	}
+	
+	public void reset() {
+		
+		plugin.getLogger().info("Reseting block");
+		World world = Bukkit.getServer().getWorld("world");
+		
+		Block fallenBlock = world.getBlockAt(this.x, fallLoc, this.z);
+		Material fallType = fallenBlock.getType();
+		//Lower one block because that coord is for top of block, technically inside the block above it. 
+		world.getBlockAt(this.x, this.y - 1, this.z).setType(fallType);
+		fallenBlock.setType(Material.AIR);
 		
 	}
 	
@@ -100,4 +162,5 @@ public class FenceTop {
 		//Location blockCorner = new Location(null, (int)temp.getX(), (int)temp.getY(), (int)temp.getZ());
 		return "" + this.x + " " + this.y + " " + this.z;
 	}
+
 }

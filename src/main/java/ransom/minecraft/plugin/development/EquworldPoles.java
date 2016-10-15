@@ -1,6 +1,6 @@
 package ransom.minecraft.plugin.development;
 
-import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Horse;
@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Set;
 
 public class EquworldPoles extends JavaPlugin implements Listener {
@@ -26,23 +25,10 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		(new File(pluginFolder)).mkdirs();
 		getLogger().info(prefix + "is now enabled!");
 		getServer().getPluginManager().registerEvents(this, this);
-
-		/*fenceBars.put("TestJump", new FenceBar());
-		fenceBars.get("TestJump").addFenceTop(new Location(null, 0.5, 0.5, 0.5));
-		fenceBars.get("TestJump").addFenceTop(new Location(null, 1, 1, 1));
-		fenceBars.get("TestJump").addFenceTop(new Location(null, 2, 2, 2));
-
 		
-		
-		getLogger().info("Print tests: \n A location: " + new Location(null, 0.5, 0.5, 0.5)
-				+ "\nA fenceBar: " + fenceBars.get("TestJump")
-				+ "\nA fenceTop: " + fenceBars.get("TestJump").getFenceTops().get(0));
-*/
-		
-		this.jumpsStore = new JumpsStore(new File(pluginFolder + File.separator + "Jumps.txt"));
+		this.jumpsStore = new JumpsStore(new File(pluginFolder + File.separator + "Jumps.txt"), this);
 		this.jumpsStore.load();
 		
-
 	}
 	
 	
@@ -67,8 +53,14 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event)
-	{
-		
+	{	Player player = event.getPlayer();
+		//player.sendMessage("You've Interacted");
+
+		Block clickedBlock = event.getClickedBlock();
+		if(jumpsStore.clickOn(clickedBlock)){
+			player.sendMessage("Jump has been reset");
+		}
+		event.setCancelled(true);
 	}
 	
 	
