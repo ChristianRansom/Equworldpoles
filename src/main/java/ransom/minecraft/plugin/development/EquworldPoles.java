@@ -59,8 +59,9 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		Block clickedBlock = event.getClickedBlock();
 		if(jumpsStore.clickOn(clickedBlock)){
 			player.sendMessage("Jump has been reset");
+			//Cancels event so blocks can't be placed accidentally when resetting. 
+			event.setCancelled(true);
 		}
-		event.setCancelled(true);
 	}
 	
 	

@@ -79,6 +79,8 @@ public class JumpsStore {
 		}
 	}
 	
+	
+	//TODO save in fallLocs and write proper load for them
 	public void save(){
 		Iterator it = this.fenceBars.entrySet().iterator();
 		
