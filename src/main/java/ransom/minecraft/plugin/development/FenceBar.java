@@ -2,6 +2,7 @@ package ransom.minecraft.plugin.development;
 
 import java.util.ArrayList;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 
@@ -10,15 +11,18 @@ public class FenceBar {
 	private ArrayList<FenceTop> fenceTops = new ArrayList<FenceTop>();
 	private Location resetSign = new Location(null, 0, 0, 0);
 	private boolean set;
-	private Plugin plugin;//This is here to be able to communicate with the consol for debugging	
+	private Plugin plugin;//This is here to be able to communicate with the consol for debugging
+	private World world;
 	
-	public FenceBar(Plugin thePlugin){
-		this(true, thePlugin); 
+	public FenceBar(Plugin thePlugin, World theWorld){
+		this(true, thePlugin, theWorld); 
 	}
 	
-	public FenceBar(boolean setter, Plugin thePlugin){
+	//Default constructor sort of - Other constructors lead to this one. 
+	public FenceBar(boolean setter, Plugin thePlugin, World theWorld){
 		this.set = setter;
 		this.plugin = thePlugin;
+		this.world = theWorld;
 
 	}
 	//Called on Player Move
@@ -38,7 +42,7 @@ public class FenceBar {
 	and clear logic flow*/
 	private void fall(){
 		for(FenceTop block : fenceTops){
-			block.fall();
+			block.fall(world);
 		}
 		this.set = false;
 	}
@@ -53,7 +57,6 @@ public class FenceBar {
 
 	public boolean addFenceTop(Location location) {
 		FenceTop fence = new FenceTop(location.getBlockX(), location.getBlockY(), location.getBlockZ(), plugin);
-		System.out.print("DOes this work?");
 		if(!this.contains(fence)){
 			fenceTops.add(new FenceTop(location, plugin));
 			return true;
@@ -61,14 +64,18 @@ public class FenceBar {
 		return false;		
 	}
 	
-	public ArrayList<FenceTop> getFenceTops(){
-		return fenceTops;
-	}
-
 	public void addFenceTop(int x, int y, int z) {
 		fenceTops.add(new FenceTop(x, y, z, plugin));
 	}
 	
+	public void addFenceTop(int x, int y, int z, int fallLoc) {
+		fenceTops.add(new FenceTop(x, y, z, fallLoc, plugin));
+	}
+	
+	public ArrayList<FenceTop> getFenceTops(){
+		return fenceTops;
+	}
+
 	public boolean removeFenceTop(int x, int y, int z){
 		FenceTop fence = new FenceTop(x,y,z, plugin);
 		if(this.contains(fence)){
@@ -102,7 +109,7 @@ public class FenceBar {
 
 	private void reset() {
 		for(FenceTop fence : fenceTops){
-			fence.reset();
+			fence.reset(this.world);
 		}
 		this.set = true;
 	}
@@ -120,8 +127,7 @@ public class FenceBar {
 		this.set = set;
 	}
 
-
-
-
-	
+	public World getWorld() {
+		return this.world;
+	}
 }

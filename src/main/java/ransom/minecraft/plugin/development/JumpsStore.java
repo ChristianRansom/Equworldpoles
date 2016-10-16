@@ -14,7 +14,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 
@@ -40,37 +42,54 @@ public class JumpsStore {
 	
 	
 	public void load(){
+		//TODO say how many jumps are loaded to consol
+		//TODO add additional load/save to handle if fence is fallen
 		DataInputStream stream;
 		try {
 			stream = new DataInputStream(new FileInputStream(this.storageFile));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			//TODO run checks to make sure new Jump has any fencetops in it. 
-			
+			//TODO reply that block was added successfully 
 			//Line Format: Name x y z x y z x y z...
 			while((line = reader.readLine()) != null){
 				String[] values = line.split(" "); //Parse Line by spaces eh? 
 				String name;
 				boolean isSet;
+				World theWorld;
 				int x;
 				int y;
 				int z;
+				int fallLoc;
 				name = values[0];
 				isSet = Boolean.valueOf(values[1]);
+				theWorld = Bukkit.getWorld(values[2]);
 				//Not checking if it already exists. Should only load once
 				//Checks if the gate was dropped or not. /....................
+				//plugin.getLogger().info("File read boolean: " + values[1] + " and that parsed: " + isSet);
+
 				if(isSet){
-					fenceBars.put(name, new FenceBar(true, plugin)); 
+					fenceBars.put(name, new FenceBar(true, plugin, theWorld)); 
+					plugin.getLogger().info("loading a set fence. ");
+					for(int i = 3; i < values.length;){ //No auto increment because it happens in the loop
+						x = Integer.parseInt(values[i++]);
+						y = Integer.parseInt(values[i++]);
+						z = Integer.parseInt(values[i++]);
+						fenceBars.get(name).addFenceTop(x, y, z);
+					}
 				}
 				else{
-					fenceBars.put(name, new FenceBar(false, plugin));
+					fenceBars.put(name, new FenceBar(false, plugin, theWorld));
+					plugin.getLogger().info("loading a down fence. ");
+					for(int i = 3; i < values.length;){ //No auto increment because it happens in the loop
+						x = Integer.parseInt(values[i++]);
+						y = Integer.parseInt(values[i++]);
+						z = Integer.parseInt(values[i++]);
+						fallLoc = Integer.parseInt(values[i++]);
+						fenceBars.get(name).addFenceTop(x, y, z, fallLoc);
+					}
 				}
-				for(int i = 2; i < values.length;){ //No auto increment because it happens in the loop
-					x = Integer.parseInt(values[i++]);
-					y = Integer.parseInt(values[i++]);
-					z = Integer.parseInt(values[i++]);
-					fenceBars.get(name).addFenceTop(x, y, z);
-				}
+
 			}
 			reader.close();
 			stream.close();
@@ -79,7 +98,7 @@ public class JumpsStore {
 		}
 	}
 	
-	
+	//TODO add in check for list jump command to return 'none' if there are no jumps
 	//TODO save in fallLocs and write proper load for them
 	public void save(){
 		Iterator it = this.fenceBars.entrySet().iterator();
@@ -93,16 +112,26 @@ public class JumpsStore {
 				String name = (String)pair.getKey();
 				FenceBar jump = (FenceBar) pair.getValue();
 				String isSet = "" + jump.isSet();
-				
+				String world = "" + jump.getWorld().getName();
 				//Writes name at beginning of line followed by isSet. 
 				//Adding spaces to end of strings
-				String jumpString = name + " " + isSet + " "; 
+				String jumpString = name + " " + isSet + " " + world + " "; 
 				
 				ArrayList<FenceTop> fenceTops = jump.getFenceTops();
-				for(FenceTop fence : fenceTops){
-					jumpString = jumpString + fence.getX() + " ";
-					jumpString = jumpString + fence.getY() + " ";
-					jumpString = jumpString + fence.getZ() + " ";
+				if(jump.isSet()){
+					for(FenceTop fence : fenceTops){
+						jumpString = jumpString + fence.getX() + " ";
+						jumpString = jumpString + fence.getY() + " ";
+						jumpString = jumpString + fence.getZ() + " ";
+					}
+				}
+				else{
+					for(FenceTop fence : fenceTops){
+						jumpString = jumpString + fence.getX() + " ";
+						jumpString = jumpString + fence.getY() + " ";
+						jumpString = jumpString + fence.getZ() + " ";
+						jumpString = jumpString + fence.getFallLoc() + " ";
+					}
 				}
 				out.write(jumpString);
 				out.newLine();
@@ -120,9 +149,9 @@ public class JumpsStore {
 		return this.fenceBars.containsKey(value);
 	}
 	
-	public void add(String value){
+	public void add(String value, World theWorld){
 		if(this.contains(value) == false){
-			this.fenceBars.put(value, new FenceBar(plugin));
+			this.fenceBars.put(value, new FenceBar(plugin, theWorld));
 		}
 	}
 	

@@ -46,7 +46,8 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		 if ((player.isInsideVehicle()) || ((player.getVehicle() instanceof Horse))){
 			 //player.sendMessage("You're on a horse");
 			 if(jumpsStore.jumpHit(player.getLocation(), this)){
-				 
+				 saveData();
+				 //commenting to commit
 			 }
 		 }
 	}
@@ -64,7 +65,7 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		}
 	}
 	
-	
+	//TODO dont allow them to create a fence with the same name? 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		
@@ -93,11 +94,16 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		}
 		
 		//MakeJump <JumpName>
-		if(args.length > 0){
+		if(!(sender instanceof Player)){
+			sender.sendMessage("This command is only available in game.");
+			return true;
+		}
+		else if(args.length > 0){
+			Player player = (Player)sender;
 			if (cmd.getName().equalsIgnoreCase("MakeJump")) {
 				//fenceBars.put(args[0], new FenceBar());
 				sender.sendMessage("Jump Created");
-				this.jumpsStore.add(args[0]);
+				this.jumpsStore.add(args[0], player.getWorld());
 				saveData();
 				return true;
 			}
@@ -111,51 +117,40 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 					sender.sendMessage("There is no Jump by that name.");
 				}
 				return true;
-			}
-			//AddBlock <JumpName>
+			}			//AddBlock <JumpName>
 			else if(cmd.getName().equalsIgnoreCase("AddBlock")){
-				if((sender instanceof Player)){
-					Player player = (Player)sender;
-					if(!this.jumpsStore.contains(args[0])){
-						sender.sendMessage("There is no jump by that name");
-					}
-					if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
-						sender.sendMessage("Block added to jump: " + args[0]);
-						saveData();
-					}
-					else {
-						sender.sendMessage("That block is already part of jump: " + args[0]);
-					}
+				if(!this.jumpsStore.contains(args[0])){
+					sender.sendMessage("There is no jump by that name");
+				}
+				if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
+					sender.sendMessage("Block added to jump: " + args[0]);
+					saveData();
 				}
 				else {
-					sender.sendMessage("This command is only available in game.");
+					sender.sendMessage("That block is already part of jump: " + args[0]);
 				}
-				
-				return true;
 			}
 			//TODO fix remove block and other freaking errors adding/removinig blocks from non-existant jumps
 			//RemoveBlock <JumpName>
 			else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
-				if(sender instanceof Player){
-					Player player = (Player)sender;
-					if(!this.jumpsStore.contains(args[0])){
-						sender.sendMessage("There is no jump by that name");
-					}
-					if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
-						sender.sendMessage("Block removed from jump: " + args[0]);
-						saveData();
-					}
-					else{
-						sender.sendMessage("That block is not part of jump: " + args[0]);
-					}
+				if(!this.jumpsStore.contains(args[0])){
+					sender.sendMessage("There is no jump by that name");
 				}
-				else {
-					sender.sendMessage("This command is only available in game.");
+				if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
+					sender.sendMessage("Block removed from jump: " + args[0]);
+					saveData();
+				}
+				else{
+					sender.sendMessage("That block is not part of jump: " + args[0]);
 				}
 				return true;
 			}
 		}
-		return false;
+		else {
+			sender.sendMessage("Missing arguments.");
+			return true;
+		}
+		return false; 
 	}
 	
 	

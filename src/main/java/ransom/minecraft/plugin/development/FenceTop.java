@@ -21,7 +21,6 @@ public class FenceTop {
 	private int y;
 	private int z;
 	private int fallLoc; //Recalculates every time it falls. 
-	
 	private Plugin plugin;//This is here to be able to communicate with the consol for debugging	
 
 	public FenceTop(int x, int y, int z, Plugin thePlugin) {
@@ -46,6 +45,11 @@ public class FenceTop {
 	
 	//TODO figure out how to account for high change when horse is 'kicking legs up'
 	
+	public FenceTop(int x, int y, int z, int fallLoc, Plugin plugin) {
+		this(x, y, z, plugin);
+		this.fallLoc = fallLoc;
+	}
+
 	public boolean equals(FenceTop other){
 		if(other.getX() == this.x && other.getY() == this.y && other.getZ() == this.z){
 			return true; 
@@ -72,14 +76,11 @@ public class FenceTop {
 		return false;
 	}
 	
-	public void fall(){
-		World world = Bukkit.getServer().getWorld("world");
-		
-		
+	public void fall(World world){
 		//This is the actual fence block. Its 1 below where you stand in to create it
 		Block fenceBlock = world.getBlockAt(this.x, this.y - 1, this.z);
 
-		plugin.getLogger().info("Attempting to 'fall()");
+		//plugin.getLogger().info("Attempting to 'fall()");
 		boolean keepFalling = true;
 		
 		//The first fall location is 2 below the block you stand in to create it 
@@ -89,9 +90,9 @@ public class FenceTop {
 			Material aBlockType = aBlock.getType();
 			//if its not air, stop loop, we've found ground. 
 			if(aBlockType != Material.AIR){
-				plugin.getLogger().info("Block material: " + aBlockType);
+				//plugin.getLogger().info("Block material: " + aBlockType);
 				keepFalling = false;
-				plugin.getLogger().info("We've Hit the ground");
+				//plugin.getLogger().info("We've Hit the ground");
 			}
 			else{
 				plugin.getLogger().info("Air Block found");
@@ -99,43 +100,40 @@ public class FenceTop {
 			}
 		}
 		Block fallBlock = world.getBlockAt(this.x, (fallLoc + 1), this.z); //Not sure why it needs fallLoc + 1 but it does. 
-		plugin.getLogger().info("This is the fallLoc where I put the block: " + fallLoc);
+		//plugin.getLogger().info("This is the fallLoc where I put the block: " + fallLoc);
 		fallBlock.setType(fenceBlock.getType());
 		fenceBlock.setType(Material.AIR);
 		
 	}
 	
 	public boolean isClicked(Block clickedBlock) {
-		int clickSpot = fallLoc;
-		plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
+		/*plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
 		plugin.getLogger().info("Fallen Block: " + this.x + " " + this.fallLoc + " " + this.z);
-		plugin.getLogger().info("Thats not a fallen fenceBlock");
+		plugin.getLogger().info("Thats not a fallen fenceBlock");*/
 		
 		if(clickedBlock.getX() == this.x && clickedBlock.getY() == this.fallLoc && clickedBlock.getZ() == this.z){	
-			plugin.getLogger().info("THATS A FALLEN BLOCK OMG!!!");
+			//plugin.getLogger().info("THATS A FALLEN BLOCK OMG!!!");
 			return true;
 		}
-		plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
+		/*plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
 		plugin.getLogger().info("Fallen Block: " + this.x + " " + this.fallLoc + " " + this.z);
-		plugin.getLogger().info("Thats not a fallen fenceBlock");
+		plugin.getLogger().info("Thats not a fallen fenceBlock");*/
 		return false;
 	}
 	
-	public void reset() {
-		
-		plugin.getLogger().info("Reseting block");
-		World world = Bukkit.getServer().getWorld("world");
-		
+	public void reset(World world) {
+		//TODO what on earth do i do if a block is added while its down?!?
+		//plugin.getLogger().info("Reseting block");
 		Block fallenBlock = world.getBlockAt(this.x, fallLoc, this.z);
-		Material fallType = fallenBlock.getType();
-		//Lower one block because that coord is for top of block, technically inside the block above it. 
+		Material fallType = fallenBlock.getType(); 
+		//plugin.getLogger().info("Fallen block type: " + fallType);//This is throwing a null pointer exception. I cri
 		world.getBlockAt(this.x, this.y - 1, this.z).setType(fallType);
 		fallenBlock.setType(Material.AIR);
 		
 	}
 	
 	public int getX() {
-		return x;
+		return this.x;
 	}
 
 	public void setX(int x) {
@@ -151,7 +149,7 @@ public class FenceTop {
 	}
 
 	public int getZ() {
-		return z;
+		return this.z;
 	}
 
 	public void setZ(int z) {
@@ -161,6 +159,14 @@ public class FenceTop {
 	public String toString(){
 		//Location blockCorner = new Location(null, (int)temp.getX(), (int)temp.getY(), (int)temp.getZ());
 		return "" + this.x + " " + this.y + " " + this.z;
+	}
+
+	public int getFallLoc() {
+		return this.fallLoc;
+	}
+	
+	public void setFallLoc(int loc) {
+		this.fallLoc = loc;
 	}
 
 }
