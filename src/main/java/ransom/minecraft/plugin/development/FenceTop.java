@@ -101,8 +101,10 @@ public class FenceTop {
 		}
 		Block fallBlock = world.getBlockAt(this.x, (fallLoc + 1), this.z); //Not sure why it needs fallLoc + 1 but it does. 
 		//plugin.getLogger().info("This is the fallLoc where I put the block: " + fallLoc);
+		plugin.getLogger().info("Block type: " + fenceBlock.getType());
 		fallBlock.setType(fenceBlock.getType());
 		fenceBlock.setType(Material.AIR);
+
 		
 	}
 	
