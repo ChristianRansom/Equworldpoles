@@ -1,5 +1,6 @@
 package ransom.minecraft.plugin.development;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,9 +46,13 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		//Check if a horse hit the top of a jump
 		 if ((player.isInsideVehicle()) || ((player.getVehicle() instanceof Horse))){
 			 //player.sendMessage("You're on a horse");
-			 if(jumpsStore.jumpHit(player.getLocation(), this)){
+			 Location horseLoc = player.getVehicle().getLocation();
+			 
+			 getLogger().info("Horse Position: " + horseLoc.getX() + " " +  horseLoc.getY() + " " +  horseLoc.getZ()); 
+			 
+			 if(jumpsStore.jumpHit(horseLoc, this)){
 				 saveData();
-				 //commenting to commit
+				 
 			 }
 		 }
 	}
