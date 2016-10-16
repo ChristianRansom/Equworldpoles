@@ -29,11 +29,11 @@ public class FenceTop {
 		this.z = z;
 		//TODO check if fence top is a slab?  
 		//These values are due to the hit box size of the horse.
-		this.maxX = x + 1.688;
-		this.minX = x - 0.699; //This value of 700 doesn't match f3 coords... should be .719
-		this.maxY = y + 0.8500001;//Little be more than exact horse height being: .8500000178814 
-		this.minY = y - .5;//This is arbitrary. They'd have to be inside of the fencetop block to be here. 
-		this.maxZ = z + 1.688;
+		this.maxX = x + 1.699999;
+		this.minX = x - 0.699; 
+		this.maxY = y + 0.00001;
+		this.minY = y - .5;//This is arbitrary. They'd have to be inside of the block to be here. 
+		this.maxZ = z + 1.699999;
 		this.minZ = z - 0.699;
 		
 		plugin = thePlugin;
@@ -95,7 +95,7 @@ public class FenceTop {
 				//plugin.getLogger().info("We've Hit the ground");
 			}
 			else{
-				plugin.getLogger().info("Air Block found");
+				//plugin.getLogger().info("Air Block found");
 				fallLoc--;
 			}
 		}
