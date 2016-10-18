@@ -23,7 +23,7 @@ import org.bukkit.plugin.Plugin;
 public class JumpsStore {
 	private File storageFile;
 	private HashMap<String, FenceBar> fenceBars; //Stores name of the jump as a key
-	private Plugin plugin;//This is here so we can communicate with the consol for debugging. 
+	private Plugin plugin;//This is here so we can communicate with the console for debugging. 
 
 	
 	public JumpsStore(File file, Plugin thePlugin){
@@ -42,8 +42,7 @@ public class JumpsStore {
 	
 	
 	public void load(){
-		//TODO say how many jumps are loaded to consol
-		//TODO add additional load/save to handle if fence is fallen
+		//TODO say how many jumps are loaded to console
 		DataInputStream stream;
 		try {
 			stream = new DataInputStream(new FileInputStream(this.storageFile));
@@ -51,9 +50,9 @@ public class JumpsStore {
 			String line;
 			//TODO run checks to make sure new Jump has any fencetops in it. 
 			//TODO reply that block was added successfully 
-			//Line Format: Name x y z x y z x y z...
+			//File format Name isSet World <false || doubleSlab || bottomSlab> x y z <fallLoc if !isSet> x y z <fallLoc if !isSet> x y z ... 
 			while((line = reader.readLine()) != null){
-				String[] values = line.split(" "); //Parse Line by spaces eh? 
+				String[] values = line.split(" "); //Parsing by line spaces. Makes file easy to read for people too. 
 				String name;
 				boolean isSet;
 				World theWorld;
@@ -115,6 +114,8 @@ public class JumpsStore {
 				String world = "" + jump.getWorld().getName();
 				//Writes name at beginning of line followed by isSet. 
 				//Adding spaces to end of strings
+				
+				//File format Name isSet World x y z <fallLoc if !isSet> x y z <fallLoc if !isSet> x y z ... 
 				String jumpString = name + " " + isSet + " " + world + " "; 
 				
 				ArrayList<FenceTop> fenceTops = jump.getFenceTops();

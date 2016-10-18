@@ -28,10 +28,9 @@ public class FenceBar {
 	//Called on Player Move
 	public boolean isHit(Location playerLoc, EquworldPoles equworldPoles){
 		for(FenceTop fence : fenceTops){
-			if(fence.isHit(playerLoc, equworldPoles)){
+			if(fence.isHit(playerLoc, equworldPoles) && this.set){
 				fall();
 				return true;
-				
 			}
 		}
 		return false;
@@ -99,6 +98,7 @@ public class FenceBar {
 		for(FenceTop fence : fenceTops){
 			if(fence.isClicked(clickedBlock)){
 				this.reset();
+				this.set = true;
 				return true;
 			}
 		}

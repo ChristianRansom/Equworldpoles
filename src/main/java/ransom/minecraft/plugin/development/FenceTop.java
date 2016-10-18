@@ -5,6 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
 public class FenceTop {
@@ -21,7 +23,16 @@ public class FenceTop {
 	private int y;
 	private int z;
 	private int fallLoc; //Recalculates every time it falls. 
-	private Plugin plugin;//This is here to be able to communicate with the consol for debugging	
+	private String fallenSlab;
+	
+	private final int[] slabs = {44, 182, 126};
+	private final int[] doubleSlabs = {43, 125};
+	//44:0-7 bottom, 44:8-15 top
+	//182:0 bottom,  44:8 top
+	//126:0-5 bottom, 126:8-13 top
+	//Double slabs 43:0-15
+	//Double slabs 125:0-5
+	private Plugin plugin;//This is here to be able to communicate with the console for debugging	
 
 	public FenceTop(int x, int y, int z, Plugin thePlugin) {
 		this.x = x;
@@ -42,9 +53,7 @@ public class FenceTop {
 	public FenceTop(Location playerLoc, Plugin thePlugin){
 		this(playerLoc.getBlockX(), playerLoc.getBlockY(), playerLoc.getBlockZ(), thePlugin);
 	}
-	
-	//TODO figure out how to account for high change when horse is 'kicking legs up'
-	
+		
 	public FenceTop(int x, int y, int z, int fallLoc, Plugin plugin) {
 		this(x, y, z, plugin);
 		this.fallLoc = fallLoc;
@@ -56,7 +65,7 @@ public class FenceTop {
 		}
 		return false;
 	}
-
+//no
 	public boolean isHit(Location playerLoc, EquworldPoles equworldPoles) {
 		/*plugin.getLogger().info("playerLocation: " + 
 				playerLoc.getX() + " " + playerLoc.getY() + " " + playerLoc.getZ());
@@ -76,10 +85,13 @@ public class FenceTop {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void fall(World world){
 		//This is the actual fence block. Its 1 below where you stand in to create it
 		Block fenceBlock = world.getBlockAt(this.x, this.y - 1, this.z);
-
+		BlockState fenceState = fenceBlock.getState();
+		Material fenceType = fenceState.getType();
+		byte fenceData = fenceBlock.getData();
 		//plugin.getLogger().info("Attempting to 'fall()");
 		boolean keepFalling = true;
 		
@@ -99,10 +111,21 @@ public class FenceTop {
 				fallLoc--;
 			}
 		}
+		//if there is no air blocks beneath the fence 
+		if(fallLoc == this.y){
+			if(fenceType.equals(Material.STEP)){
+				
+			}
+		}
 		Block fallBlock = world.getBlockAt(this.x, (fallLoc + 1), this.z); //Not sure why it needs fallLoc + 1 but it does. 
 		//plugin.getLogger().info("This is the fallLoc where I put the block: " + fallLoc);
-		plugin.getLogger().info("Block type: " + fenceBlock.getType());
+		plugin.getLogger().info("Block type: " + fenceBlock.getType()  + 
+				" Block state: " + fenceState + 
+				" Fence data: " + fenceData);
+		//fallBlock.setType(fenceBlock.getType());
+		BlockState fallenState = fallBlock.getState();
 		fallBlock.setType(fenceBlock.getType());
+		fallBlock.setData(fenceData);
 		fenceBlock.setType(Material.AIR);
 
 		
@@ -112,8 +135,8 @@ public class FenceTop {
 		/*plugin.getLogger().info("Clicked Block: " + clickedBlock.getX() + " " + clickedBlock.getY() + " " + clickedBlock.getZ());
 		plugin.getLogger().info("Fallen Block: " + this.x + " " + this.fallLoc + " " + this.z);
 		plugin.getLogger().info("Thats not a fallen fenceBlock");*/
-		
-		if(clickedBlock.getX() == this.x && clickedBlock.getY() == this.fallLoc && clickedBlock.getZ() == this.z){	
+		plugin.getLogger().info(clickedBlock.toString());
+		if(clickedBlock.getX() == this.x && clickedBlock.getY() == this.fallLoc  + 1 && clickedBlock.getZ() == this.z){	
 			//plugin.getLogger().info("THATS A FALLEN BLOCK OMG!!!");
 			return true;
 		}
@@ -123,13 +146,16 @@ public class FenceTop {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void reset(World world) {
 		//TODO what on earth do i do if a block is added while its down?!?
 		//plugin.getLogger().info("Reseting block");
-		Block fallenBlock = world.getBlockAt(this.x, fallLoc, this.z);
+		Block fallenBlock = world.getBlockAt(this.x, fallLoc + 1, this.z);
 		Material fallType = fallenBlock.getType(); 
 		//plugin.getLogger().info("Fallen block type: " + fallType);//This is throwing a null pointer exception. I cri
-		world.getBlockAt(this.x, this.y - 1, this.z).setType(fallType);
+		Block fenceBlock = world.getBlockAt(this.x, this.y - 1, this.z);
+		fenceBlock.setType(fallType);
+		fenceBlock.setData(fallenBlock.getData());
 		fallenBlock.setType(Material.AIR);
 		
 	}

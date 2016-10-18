@@ -1,5 +1,6 @@
 package ransom.minecraft.plugin.development;
 
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -47,12 +48,9 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		 if ((player.isInsideVehicle()) || ((player.getVehicle() instanceof Horse))){
 			 //player.sendMessage("You're on a horse");
 			 Location horseLoc = player.getVehicle().getLocation();
-			 
-			 getLogger().info("Horse Position: " + horseLoc.getX() + " " +  horseLoc.getY() + " " +  horseLoc.getZ()); 
-			 
+			 //getLogger().info("Horse Position: " + horseLoc.getX() + " " +  horseLoc.getY() + " " +  horseLoc.getZ()); 
 			 if(jumpsStore.jumpHit(horseLoc, this)){
 				 saveData();
-				 
 			 }
 		 }
 	}
@@ -63,7 +61,7 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		//player.sendMessage("You've Interacted");
 
 		Block clickedBlock = event.getClickedBlock();
-		if(jumpsStore.clickOn(clickedBlock)){
+		if(event.getClickedBlock() != null && jumpsStore.clickOn(clickedBlock)){
 			player.sendMessage("Jump has been reset");
 			//Cancels event so blocks can't be placed accidentally when resetting. 
 			event.setCancelled(true);
