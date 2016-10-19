@@ -47,7 +47,6 @@ public class JumpsStore {
 			stream = new DataInputStream(new FileInputStream(this.storageFile));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
-			//TODO run checks to make sure new Jump has any fencetops in it. 
 			//File format Name isSet World <false || doubleSlab || bottomSlab> x y z <fallLoc if !isSet> x y z <fallLoc if !isSet> x y z ... 
 			while((line = reader.readLine()) != null){
 				String[] values = line.split(" "); //Parsing by line spaces. Makes file easy to read for people too. 
@@ -95,11 +94,10 @@ public class JumpsStore {
 		}
 	}
 	
-	//TODO add in check for list jump command to return 'none' if there are no jumps
 	//TODO save in fallLocs and write proper load for them
 	public void save(){
 		Iterator it = this.fenceBars.entrySet().iterator();
-		
+
 		try {
 			FileWriter stream = new FileWriter(this.storageFile);
 			BufferedWriter out = new BufferedWriter(stream);

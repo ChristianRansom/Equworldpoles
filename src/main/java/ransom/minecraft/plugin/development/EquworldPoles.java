@@ -75,10 +75,16 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		if(cmd.getName().equalsIgnoreCase("ListJumps")){
 			//sender.sendMessage(this.jumpsStore.getJumpNames().toString());
 			Set<String> alldata = this.jumpsStore.getJumpNames();
-			for(String value : alldata){
-				sender.sendMessage(value);
+			if(!alldata.isEmpty()){
+				for(String value : alldata){
+					sender.sendMessage(value);
+				}
+				return true;
 			}
-			return true;
+			else {
+				sender.sendMessage("You have not created any jumps yet.");
+				return true;
+			}
 		}
 		if(cmd.getName().equalsIgnoreCase("EquworldPoles")){
 			if(args.length > 0 && args[0].equalsIgnoreCase("help")){
