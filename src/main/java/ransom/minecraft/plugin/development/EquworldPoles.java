@@ -68,7 +68,6 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 		}
 	}
 	
-	//TODO dont allow them to create a fence with the same name? 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		
@@ -105,9 +104,13 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 			Player player = (Player)sender;
 			if (cmd.getName().equalsIgnoreCase("MakeJump")) {
 				//fenceBars.put(args[0], new FenceBar());
-				sender.sendMessage("Jump Created");
-				this.jumpsStore.add(args[0], player.getWorld());
-				saveData();
+				if(this.jumpsStore.add(args[0], player.getWorld())){
+					sender.sendMessage("Jump Created");
+					saveData();
+				}
+				else{
+					sender.sendMessage("There is already a jump with that name.");
+				}
 				return true;
 			}
 			//DeleteJump <JumpName>
@@ -120,12 +123,13 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 					sender.sendMessage("There is no Jump by that name.");
 				}
 				return true;
-			}			//AddBlock <JumpName>
+			}//AddBlock <JumpName>
+			//TODO Don't allow adding a block that already belongs to another jump
 			else if(cmd.getName().equalsIgnoreCase("AddBlock")){
 				if(!this.jumpsStore.contains(args[0])){
 					sender.sendMessage("There is no jump by that name");
 				}
-				if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
+				else if(this.jumpsStore.get(args[0]).addFenceTop(player.getLocation())){
 					sender.sendMessage("Block added to jump: " + args[0]);
 					saveData();
 				}
@@ -133,13 +137,12 @@ public class EquworldPoles extends JavaPlugin implements Listener {
 					sender.sendMessage("That block is already part of jump: " + args[0]);
 				}
 			}
-			//TODO fix remove block and other freaking errors adding/removinig blocks from non-existant jumps
 			//RemoveBlock <JumpName>
 			else if(cmd.getName().equalsIgnoreCase("RemoveBlock")){
 				if(!this.jumpsStore.contains(args[0])){
 					sender.sendMessage("There is no jump by that name");
 				}
-				if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
+				else if(this.jumpsStore.get(args[0]).removeFenceTop(player.getLocation())){
 					sender.sendMessage("Block removed from jump: " + args[0]);
 					saveData();
 				}

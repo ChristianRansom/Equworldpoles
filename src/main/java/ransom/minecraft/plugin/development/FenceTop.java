@@ -9,6 +9,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
+import com.avaje.ebeaninternal.server.transaction.TransactionMap.State;
+
 public class FenceTop {
 	//mins and maxes are stored so they only have to be calculated once
 	//These are the max boundaries within the collision box. 
@@ -113,17 +115,23 @@ public class FenceTop {
 		}
 		//if there is no air blocks beneath the fence 
 		if(fallLoc == this.y){
-			if(fenceType.equals(Material.STEP)){
-				
+			plugin.getLogger().info("There are no air block underneath the jump.");
+			if(fenceBlock.getType().equals(Material.STEP)){
+				boolean topSlab = false;
+				plugin.getLogger().info("The block is a 'step': " + fenceBlock.getType());
+				if(fenceBlock.getData() >= 8){
+					plugin.getLogger().info("The is a top slab': " + fenceBlock.getData());
+					/*This represents its fallen state. This is what will happen to the block 
+					 *
+					 * 
+					 * 
+					 E*/
+					this.fallenSlab = "bottomslab";
+				}
 			}
 		}
 		Block fallBlock = world.getBlockAt(this.x, (fallLoc + 1), this.z); //Not sure why it needs fallLoc + 1 but it does. 
 		//plugin.getLogger().info("This is the fallLoc where I put the block: " + fallLoc);
-		plugin.getLogger().info("Block type: " + fenceBlock.getType()  + 
-				" Block state: " + fenceState + 
-				" Fence data: " + fenceData);
-		//fallBlock.setType(fenceBlock.getType());
-		BlockState fallenState = fallBlock.getState();
 		fallBlock.setType(fenceBlock.getType());
 		fallBlock.setData(fenceData);
 		fenceBlock.setType(Material.AIR);

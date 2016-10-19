@@ -40,7 +40,6 @@ public class JumpsStore {
 		this.plugin = thePlugin;
 	}
 	
-	
 	public void load(){
 		//TODO say how many jumps are loaded to console
 		DataInputStream stream;
@@ -49,7 +48,6 @@ public class JumpsStore {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			//TODO run checks to make sure new Jump has any fencetops in it. 
-			//TODO reply that block was added successfully 
 			//File format Name isSet World <false || doubleSlab || bottomSlab> x y z <fallLoc if !isSet> x y z <fallLoc if !isSet> x y z ... 
 			while((line = reader.readLine()) != null){
 				String[] values = line.split(" "); //Parsing by line spaces. Makes file easy to read for people too. 
@@ -150,10 +148,12 @@ public class JumpsStore {
 		return this.fenceBars.containsKey(value);
 	}
 	
-	public void add(String value, World theWorld){
+	public boolean add(String value, World theWorld){
 		if(this.contains(value) == false){
 			this.fenceBars.put(value, new FenceBar(plugin, theWorld));
+			return true;
 		}
+		return false;
 	}
 	
 	public boolean remove(String value){
